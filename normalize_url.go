@@ -30,27 +30,7 @@ func normalizeURL(inputUrl string) (string, error) {
 }
 
 func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
-	//tokenizer := html.NewTokenizer(strings.NewReader(htmlBody))
 	var urls []string
-
-	/* for {
-		tokenType := tokenizer.Next()
-		if tokenType == html.ErrorToken {
-			return nil, tokenizer.Err()
-		}
-
-		switch tokenType {
-		case html.StartTagToken, html.SelfClosingTagToken:
-			token := tokenizer.Token()
-			if token.Data == "a" {
-				urls = append(urls, token.String())
-			}
-			fmt.Println(token.Data)
-		case html.ErrorToken:
-			return urls, nil
-		}
-	} */
-
 	page, err := html.Parse(strings.NewReader(htmlBody))
 	if err != nil {
 		return nil, err
