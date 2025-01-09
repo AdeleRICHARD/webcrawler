@@ -131,20 +131,21 @@ func TestGetURLsFromHTML(t *testing.T) {
 		assert.Nil(t, got)
 	})
 
-	t.Run("Return an error if inputURL empty", func(t *testing.T) {
+	t.Run("Return nil if inputURL empty", func(t *testing.T) {
 		inputURL := ""
 		inputHtml := `
 <html>
 	<body>
-		<p> no href </p> 
+		<a href=""> no href </p> 
 	</body>
 </html>
 `
-		_, err := getURLsFromHTML(inputHtml, inputURL)
-		assert.Error(t, err)
+		got, err := getURLsFromHTML(inputHtml, inputURL)
+		assert.NoError(t, err)
+		assert.Nil(t, nil, got)
 	})
 
-	t.Run("Return error if body empty", func(t *testing.T) {
+	t.Run("Return nil if no href", func(t *testing.T) {
 		inputURL := "https://blog.boot.dev"
 		inputHtml := `
 <html>
@@ -153,7 +154,7 @@ func TestGetURLsFromHTML(t *testing.T) {
 </html>
 `
 		got, err := getURLsFromHTML(inputHtml, inputURL)
-		assert.Error(t, err)
+		assert.NoError(t, err)
 		assert.Nil(t, got)
 	})
 }

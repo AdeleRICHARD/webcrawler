@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"net/url"
 	"path"
 	"strings"
@@ -59,10 +58,13 @@ func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 
 	for node := range page.Descendants() {
 		if node.Type == html.ElementNode && node.Data == "a" {
-			fmt.Println(node.Data)
 			for _, attr := range node.Attr {
-				if attr.Key == "href" {
-					urls = append(urls, attr.Val)
+				if attr.Key == "href" && attr.Val != "" {
+					if strings.HasPrefix(attr.Val, "/") {
+						urls = append(urls, rawBaseURL+attr.Val)
+					} else {
+						urls = append(urls, attr.Val)
+					}
 					break
 				}
 			}
