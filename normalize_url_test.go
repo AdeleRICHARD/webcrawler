@@ -77,6 +77,22 @@ func TestNormalizeURL(t *testing.T) {
 		assert.Error(t, err)
 	})
 
+	t.Run("return domain only", func(t *testing.T) {
+		inputUrl := "https://blog.boot.dev/"
+		expected := "blog.boot.dev"
+
+		got, _ := normalizeURL(inputUrl)
+		assert.Equal(t, expected, got)
+	})
+
+	t.Run("return domain only", func(t *testing.T) {
+		inputUrl := "blog.boot.dev/"
+		expected := "blog.boot.dev"
+
+		got, _ := normalizeURL(inputUrl)
+		assert.Equal(t, expected, got)
+	})
+
 }
 
 func TestGetURLsFromHTML(t *testing.T) {

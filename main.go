@@ -21,11 +21,11 @@ func main() {
 	if len(args) == 1 {
 		fmt.Println("starting crawl of: ", args[0])
 	}
-	page, err := getHTML(args[0])
+
+	crawlPage(args[0], args[0], map[string]int{})
+	/* page, err := getHTML(args[0])
 	if err != nil {
 		fmt.Println("Error while crawling page : ", err)
 		os.Exit(1)
-	}
-
-	println(page)
+	} */
 }

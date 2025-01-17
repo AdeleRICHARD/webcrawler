@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/pkg/errors"
 )
 
 func getHTML(rawURL string) (string, error) {
+	fmt.Println("Getting Html from ", rawURL)
 	resp, err := http.Get(rawURL)
 	if err != nil {
 		return "", err
@@ -18,7 +20,7 @@ func getHTML(rawURL string) (string, error) {
 		return "", fmt.Errorf("error while calling website with status code : %v", resp.StatusCode)
 	}
 
-	if resp.Header.Get("Content-Type") != "text/html" {
+	if !strings.Contains(resp.Header.Get("Content-Type"), "text/html") {
 		return "", errors.New("no html found in response")
 	}
 

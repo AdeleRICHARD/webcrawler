@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/url"
 	"path"
 	"strings"
@@ -11,25 +12,35 @@ import (
 
 func normalizeURL(inputUrl string) (string, error) {
 	if inputUrl == "" {
-		return "", errors.New("InpurUrl is empty")
+		return "", errors.New("InputUrl is empty")
 	}
+
 	parsedURL, err := url.Parse(inputUrl)
 	if err != nil {
 		return "", err
 	}
 
+	// On retourne simplement le hostname pour les URLs qui n'ont que "/"
+	if parsedURL.Path == "/" || parsedURL.Path == "" {
+		return parsedURL.Host, nil
+	}
+
 	cleanedPath := path.Clean(parsedURL.Path)
-	if !strings.HasPrefix(cleanedPath, "/") {
+	if !strings.HasPrefix(cleanedPath, "/") && cleanedPath != "." {
 		cleanedPath = "/" + cleanedPath
 	}
 
-	normalizedURL := parsedURL.Host + cleanedPath
-	normalizedURL = strings.ReplaceAll(normalizedURL, " ", "")
+	normalizedURL := parsedURL.Host
+	if cleanedPath != "." {
+		normalizedURL += cleanedPath
+	}
 
+	normalizedURL = strings.ReplaceAll(normalizedURL, " ", "")
 	return normalizedURL, nil
 }
 
 func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
+	fmt.Println("Getting url form html with url ", rawBaseURL)
 	var urls []string
 	page, err := html.Parse(strings.NewReader(htmlBody))
 	if err != nil {
