@@ -52,5 +52,4 @@ func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 	}
 
 	return urls, nil
-
 }
