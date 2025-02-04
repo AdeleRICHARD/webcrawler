@@ -85,12 +85,35 @@ func TestNormalizeURL(t *testing.T) {
 		assert.Equal(t, expected, got)
 	})
 
-	t.Run("return domain only", func(t *testing.T) {
-		inputUrl := "blog.boot.dev/"
+	t.Run("return domain only and not /", func(t *testing.T) {
+		inputUrl := "www.boot.dev/"
+		expected := "www.boot.dev"
+
+		got, _ := normalizeURL(inputUrl)
+		assert.Equal(t, expected, got)
+	})
+
+	t.Run("uppercase letter in url", func(t *testing.T) {
+		inputUrl := "https://BLOG.boot.dev/PATH"
+		expected := "blog.boot.dev/path"
+
+		got, _ := normalizeURL(inputUrl)
+		assert.Equal(t, expected, got)
+	})
+
+	t.Run("return domain only and not two /", func(t *testing.T) {
+		inputUrl := "https://blog.boot.dev//"
 		expected := "blog.boot.dev"
 
 		got, _ := normalizeURL(inputUrl)
 		assert.Equal(t, expected, got)
+	})
+
+	t.Run("bad format url", func(t *testing.T) {
+		inputUrl := "https://blog..boot.dev/path"
+
+		_, err := normalizeURL(inputUrl)
+		assert.Error(t, err)
 	})
 
 }

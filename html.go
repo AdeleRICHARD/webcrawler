@@ -30,6 +30,5 @@ func getHTML(rawURL string) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	println(string(body))
 	return string(body), nil
 }

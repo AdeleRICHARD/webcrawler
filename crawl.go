@@ -21,7 +21,6 @@ func crawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 
 	if rawDomainUrl != currentDomainUrl {
 		fmt.Println("Other domain stoping this crawl ", currentDomainUrl)
-
 		return
 	}
 

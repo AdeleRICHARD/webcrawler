@@ -15,13 +15,30 @@ func normalizeURL(inputUrl string) (string, error) {
 		return "", errors.New("InputUrl is empty")
 	}
 
-	parsedURL, err := url.Parse(inputUrl)
+	newInput := strings.ToLower(inputUrl)
+	if !strings.HasPrefix(inputUrl, "https://") && !strings.HasPrefix(inputUrl, "http://") {
+		newInput = "https://" + inputUrl
+	}
+
+	parsedURL, err := url.Parse(newInput)
 	if err != nil {
 		return "", err
 	}
 
+	if parsedURL.Scheme == "" && parsedURL.Host == "" && parsedURL.Path == "" {
+		return "", errors.New("empty parseUrl")
+	}
+
+	if strings.Contains(parsedURL.Host, "..") {
+		return "", errors.New("malformed URL: Invalid host")
+	}
+
+	if strings.ContainsAny(parsedURL.Path, "<>") {
+		return "", errors.New("malformed URL: Invalid characters in path")
+	}
+
 	// On retourne simplement le hostname pour les URLs qui n'ont que "/"
-	if parsedURL.Path == "/" || parsedURL.Path == "" {
+	if parsedURL.Path == "/" || parsedURL.Path == "//" {
 		return parsedURL.Host, nil
 	}
 
