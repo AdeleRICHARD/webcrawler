@@ -56,7 +56,7 @@ func normalizeURL(inputUrl string) (string, error) {
 	return normalizedURL, nil
 }
 
-func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
+func getURLsFromHTML(htmlBody string, rawBaseURL *url.URL) ([]string, error) {
 	fmt.Println("Getting url form html with url ", rawBaseURL)
 	var urls []string
 	page, err := html.Parse(strings.NewReader(htmlBody))
@@ -69,7 +69,7 @@ func getURLsFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 			for _, attr := range node.Attr {
 				if attr.Key == "href" && attr.Val != "" {
 					if strings.HasPrefix(attr.Val, "/") {
-						urls = append(urls, rawBaseURL+attr.Val)
+						urls = append(urls, rawBaseURL.String()+attr.Val)
 					} else {
 						urls = append(urls, attr.Val)
 					}

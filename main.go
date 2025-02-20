@@ -5,6 +5,8 @@ import (
 	"os"
 )
 
+const maxConcurrency = 3
+
 func main() {
 	args := os.Args[1:]
 	fmt.Println(args)
@@ -18,14 +20,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	if len(args) == 1 {
-		fmt.Println("starting crawl of: ", args[0])
+	rawBaseURL := args[0]
+	cfg, err := newConfig(rawBaseURL, maxConcurrency)
+	if err != nil {
+		fmt.Printf("Error while configue %v", err)
 	}
 
-	crawlPage(args[0], args[0], map[string]int{})
-	/* page, err := getHTML(args[0])
-	if err != nil {
-		fmt.Println("Error while crawling page : ", err)
-		os.Exit(1)
-	} */
+	if len(args) == 1 {
+		fmt.Println("starting crawl of: ", rawBaseURL)
+	}
+
+	cfg.wg.Add(1)
+	go cfg.crawlPage(rawBaseURL)
+	cfg.wg.Wait()
+
+	for normalizedURL, count := range cfg.pages {
+		fmt.Printf("%d of urls for %s\n", count, normalizedURL)
+	}
 }

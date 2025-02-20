@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -120,17 +121,20 @@ func TestNormalizeURL(t *testing.T) {
 
 func TestGetURLsFromHTML(t *testing.T) {
 	t.Run("Exact two links from page", func(t *testing.T) {
-		inputURL := "https://blog.boot.dev"
+		inputURLStr := "https://blog.boot.dev"
+		inputURL, err := url.Parse(inputURLStr)
+		assert.NoError(t, err)
+
 		inputHtml := `
 <html>
-	<body>
-		<a href="/path/one">
-			<span>Boot.dev</span>
-		</a>
-		<a href="https://other.com/path/one">
-			<span>Boot.dev</span>
-		</a>
-	</body>
+    <body>
+        <a href="/path/one">
+            <span>Boot.dev</span>
+        </a>
+        <a href="https://other.com/path/one">
+            <span>Boot.dev</span>
+        </a>
+    </body>
 </html>
 `
 		expected := []string{"https://blog.boot.dev/path/one", "https://other.com/path/one"}
@@ -140,14 +144,17 @@ func TestGetURLsFromHTML(t *testing.T) {
 	})
 
 	t.Run("Exact one link from page", func(t *testing.T) {
-		inputURL := "https://blog.boot.dev"
+		inputURLStr := "https://blog.boot.dev"
+		inputURL, err := url.Parse(inputURLStr)
+		assert.NoError(t, err)
+
 		inputHtml := `
 <html>
-	<body>
-		<a href="/path/one">
-			<span>Boot.dev</span>
-		</a>
-	</body>
+    <body>
+        <a href="/path/one">
+            <span>Boot.dev</span>
+        </a>
+    </body>
 </html>
 `
 		expected := []string{"https://blog.boot.dev/path/one"}
@@ -157,12 +164,15 @@ func TestGetURLsFromHTML(t *testing.T) {
 	})
 
 	t.Run("Exact 0 link from page", func(t *testing.T) {
-		inputURL := "https://blog.boot.dev"
+		inputURLStr := "https://blog.boot.dev"
+		inputURL, err := url.Parse(inputURLStr)
+		assert.NoError(t, err)
+
 		inputHtml := `
 <html>
-	<body>
-		<p> no href </p> 
-	</body>
+    <body>
+        <p> no href </p> 
+    </body>
 </html>
 `
 		got, err := getURLsFromHTML(inputHtml, inputURL)
@@ -171,12 +181,14 @@ func TestGetURLsFromHTML(t *testing.T) {
 	})
 
 	t.Run("Return nil if inputURL empty", func(t *testing.T) {
-		inputURL := ""
+		inputURL, err := url.Parse("")
+		assert.NoError(t, err)
+
 		inputHtml := `
 <html>
-	<body>
-		<a href=""> no href </p> 
-	</body>
+    <body>
+        <a href=""> no href </p> 
+    </body>
 </html>
 `
 		got, err := getURLsFromHTML(inputHtml, inputURL)
@@ -185,11 +197,14 @@ func TestGetURLsFromHTML(t *testing.T) {
 	})
 
 	t.Run("Return nil if no href", func(t *testing.T) {
-		inputURL := "https://blog.boot.dev"
+		inputURLStr := "https://blog.boot.dev"
+		inputURL, err := url.Parse(inputURLStr)
+		assert.NoError(t, err)
+
 		inputHtml := `
 <html>
-	<body>
-	</body>
+    <body>
+    </body>
 </html>
 `
 		got, err := getURLsFromHTML(inputHtml, inputURL)
