@@ -28,10 +28,10 @@ func newConfig(rawBaseURL string, maxConcurrency int) (*config, error) {
 	}, nil
 }
 
-func (cfg *config) addPageVisit(normalizedURL string) (isFirst bool) {
+func (cfg *config) addPageVisit(normalizedURL string) bool {
 	// lock reading of pages to ensure no concurrency problem
 	cfg.mutex.Lock()
-	defer cfg.mutex.Lock()
+	defer cfg.mutex.Unlock()
 
 	if _, visited := cfg.pages[normalizedURL]; visited {
 		cfg.pages[normalizedURL]++
