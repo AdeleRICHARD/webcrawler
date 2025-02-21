@@ -57,27 +57,36 @@ func normalizeURL(inputUrl string) (string, error) {
 }
 
 func getURLsFromHTML(htmlBody string, rawBaseURL *url.URL) ([]string, error) {
-	fmt.Println("Getting url from html with url ", rawBaseURL)
+	fmt.Println("Getting url form html with url ", rawBaseURL)
 	var urls []string
+	var traverseNodes func(*html.Node)
+
 	page, err := html.Parse(strings.NewReader(htmlBody))
 	if err != nil {
 		return nil, err
 	}
 
-	for node := range page.Descendants() {
+	traverseNodes = func(node *html.Node) {
 		if node.Type == html.ElementNode && node.Data == "a" {
 			for _, attr := range node.Attr {
 				if attr.Key == "href" && attr.Val != "" {
-					if strings.HasPrefix(attr.Val, "/") {
-						urls = append(urls, rawBaseURL.String()+attr.Val)
-					} else {
-						urls = append(urls, attr.Val)
+					href, err := url.Parse(attr.Val)
+					if err != nil {
+						fmt.Printf("couldn't parse href '%v': %v\n", attr.Val, err)
+						continue
 					}
-					break
+					urlFound := rawBaseURL.ResolveReference(href)
+					urls = append(urls, urlFound.String())
 				}
 			}
 		}
+
+		for child := node.FirstChild; child != nil; child = child.NextSibling {
+			traverseNodes(child)
+		}
+
 	}
+	traverseNodes(page)
 
 	return urls, nil
 }
