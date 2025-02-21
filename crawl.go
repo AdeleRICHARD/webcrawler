@@ -6,6 +6,14 @@ import (
 )
 
 func (cfg *config) crawlPage(rawCurrentURL string) {
+	cfg.mutex.Lock()
+	if len(cfg.pages) >= cfg.maxPages {
+		cfg.mutex.Unlock()
+		cfg.wg.Done()
+		return
+	}
+	cfg.mutex.Unlock()
+
 	cfg.concurrencyControl <- struct{}{}
 	defer func() {
 		<-cfg.concurrencyControl
@@ -31,6 +39,8 @@ func (cfg *config) crawlPage(rawCurrentURL string) {
 	if !isFirst {
 		return
 	}
+
+	fmt.Printf("crawling %s\n", rawCurrentURL)
 
 	html, err := getHTML(rawCurrentURL)
 	if err != nil {

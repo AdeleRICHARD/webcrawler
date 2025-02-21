@@ -57,7 +57,7 @@ func normalizeURL(inputUrl string) (string, error) {
 }
 
 func getURLsFromHTML(htmlBody string, rawBaseURL *url.URL) ([]string, error) {
-	fmt.Println("Getting url form html with url ", rawBaseURL)
+	fmt.Println("Getting url from html with url ", rawBaseURL)
 	var urls []string
 	page, err := html.Parse(strings.NewReader(htmlBody))
 	if err != nil {

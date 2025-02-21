@@ -11,6 +11,7 @@ type config struct {
 	mutex              *sync.Mutex
 	concurrencyControl chan struct{}
 	wg                 *sync.WaitGroup
+	maxPages           int
 }
 
 func newConfig(rawBaseURL string, maxConcurrency int) (*config, error) {
@@ -25,6 +26,7 @@ func newConfig(rawBaseURL string, maxConcurrency int) (*config, error) {
 		mutex:              &sync.Mutex{},
 		concurrencyControl: make(chan struct{}, maxConcurrency),
 		wg:                 &sync.WaitGroup{},
+		maxPages:           0,
 	}, nil
 }
 

@@ -25,10 +25,10 @@ func getHTML(rawURL string) (string, error) {
 	}
 
 	body, err := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
 
 	return string(body), nil
 }
