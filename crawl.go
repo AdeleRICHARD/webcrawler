@@ -55,7 +55,13 @@ func (cfg *config) crawlPage(rawCurrentURL string) {
 	}
 
 	for _, url := range urls {
+		cfg.mutex.Lock()
+		if len(cfg.pages) >= cfg.maxPages {
+			cfg.mutex.Unlock()
+			return
+		}
 		cfg.wg.Add(1)
+		cfg.mutex.Unlock()
 		go cfg.crawlPage(url)
 	}
 }
