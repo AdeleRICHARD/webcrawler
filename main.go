@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 )
 
@@ -43,15 +44,43 @@ func main() {
 		cfg.maxPages = maxPages
 	}
 
-	if len(args) == 1 {
-	}
-
 	fmt.Println("starting crawl of: ", rawBaseURL)
 	cfg.wg.Add(1)
 	go cfg.crawlPage(rawBaseURL)
 	cfg.wg.Wait()
 
-	for normalizedURL, count := range cfg.pages {
+	/* for normalizedURL, count := range cfg.pages {
 		fmt.Printf("%d of urls for %s\n", count, normalizedURL)
+	} */
+
+	printReport(cfg.pages, rawBaseURL)
+
+}
+
+func printReport(pages map[string]int, baseURL string) {
+	if baseURL == "" {
+		return
+	}
+
+	fmt.Println("=============================")
+	fmt.Printf("REPORT for %s\n", baseURL)
+	fmt.Println("=============================")
+
+	type pageCount struct {
+		url   string
+		count int
+	}
+
+	var sortedPages []pageCount
+	for url, count := range pages {
+		sortedPages = append(sortedPages, pageCount{url, count})
+	}
+
+	sort.Slice(sortedPages, func(i, j int) bool {
+		return sortedPages[i].count > sortedPages[j].count
+	})
+
+	for _, page := range sortedPages {
+		fmt.Printf("Found %d internal links to %s\n", page.count, page.url)
 	}
 }
